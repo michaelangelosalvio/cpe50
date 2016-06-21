@@ -20,6 +20,10 @@ public class TestPizza {
 
         displayPizzaDetails(p1);
 
+        /*
+        Another way of getting data
+         */
+
         Pizza p2 = new Pizza();
         getPizzaDetails(p2);
         displayPizzaDetails(p2);
