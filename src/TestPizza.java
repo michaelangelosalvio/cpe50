@@ -28,6 +28,10 @@ public class TestPizza {
         getPizzaDetails(p2);
         displayPizzaDetails(p2);
 
+        Pizza p3 = new Pizza();
+        getPizzaDetails(p3);
+        displayPizzaDetails(p3);
+
     }
 
     public static void displayPizzaDetails(Pizza pizza){
