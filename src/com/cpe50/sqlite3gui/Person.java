@@ -1,5 +1,4 @@
-package com.cpe50.gridbaglayoutjtable;
-
+package com.cpe50.sqlite3gui;
 
 public class Person {
 	private String firstName, lastName;
