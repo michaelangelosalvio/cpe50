@@ -6,7 +6,6 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 
 import javax.swing.*;
 
@@ -18,6 +17,7 @@ public class PersonalInfoForm extends JFrame implements ActionListener
 	JButton saveButton, modifyButton, deleteButton;
     JTable           personsTable;
     PersonTableModel personsTableModel;
+    EditPersonalInfoForm editPersonalInfoForm;
 
     /**
      * declare data model here
@@ -32,7 +32,7 @@ public class PersonalInfoForm extends JFrame implements ActionListener
     public PersonalInfoForm() {
         init();
         addComponents();
-
+        model.updateTableUI();
 
         this.pack();
     }
@@ -98,7 +98,10 @@ public class PersonalInfoForm extends JFrame implements ActionListener
 		saveButton.addActionListener(this);
 		modifyButton.addActionListener(this);
 		deleteButton.addActionListener(this);
-		
+
+        editPersonalInfoForm.deleteButton.addActionListener(this);
+        editPersonalInfoForm.saveButton.addActionListener(this);
+
 		
 	}
 	
@@ -122,12 +125,11 @@ public class PersonalInfoForm extends JFrame implements ActionListener
 		
 		this.personsTableModel = new PersonTableModel();
 		this.personsTable = new JTable(personsTableModel);
-		
-		saveButton.addActionListener(this);
-		modifyButton.addActionListener(this);
 
 		
-		model = new PersonsDataModel();
+		model = new PersonsDataModel(this.personsTable);
+        editPersonalInfoForm = new EditPersonalInfoForm();
+
 	}
 	
 	@Override
@@ -142,18 +144,49 @@ public class PersonalInfoForm extends JFrame implements ActionListener
             /**
              * add student to database
              */
-			model.addStudent("", firstName, lastName);
+			model.addPerson(firstName, lastName);
 
             firstNameField.setText("");
             lastNameField.setText("");
-		}
-		
+
+            model.updateTableUI();
+
+        } else if ( e.getSource() == deleteButton ) {
+            if (personsTable.getSelectedRow() > -1 ) {
+                Person p = personsTableModel.getPersons().get(personsTable.getSelectedRow());
+                model.deletePerson(p.getId());
+            } else {
+                JOptionPane.showMessageDialog(null,"Please select a person");
+            }
+
+        } else if ( e.getSource() == modifyButton ) {
+            if (personsTable.getSelectedRow() > -1 ) {
+                Person p = personsTableModel.getPersons().get(personsTable.getSelectedRow());
+                editPersonalInfoForm.setPerson(p);
+            } else {
+                JOptionPane.showMessageDialog(null,"Please select a person");
+            }
+        } else if ( e.getSource() == editPersonalInfoForm.saveButton ) {
+            Person p = editPersonalInfoForm.getPerson();
+            String first_name = editPersonalInfoForm.firstNameField.getText();
+            String last_name = editPersonalInfoForm.lastNameField.getText();
+            model.updatePerson(p.getId(),first_name, last_name);
+            editPersonalInfoForm.setVisible(false);
+        } else if ( e.getSource() == editPersonalInfoForm.deleteButton ) {
+            Person p = editPersonalInfoForm.getPerson();
+            model.deletePerson(p.getId());
+            editPersonalInfoForm.setVisible(false);
+        }
+
 		
 	}
+
+
+    public static void main(String[] args) {
+        new PersonalInfoForm();
+    }
+
 	
-	public static void main(String[] args) {
-		new PersonalInfoForm();
-	}
 
 }
 

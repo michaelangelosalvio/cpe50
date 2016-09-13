@@ -1,56 +1,63 @@
 package com.cpe50.sqlite3gui;
 
+import javax.swing.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 
 public class PersonsDataModel {
 	Connection conn;
 	Statement statement;
-	PreparedStatement preparedStatement;
+	PreparedStatement preparedStatement, deletePreparedStatement, updatePreparedStatement;
+	JTable table;
 
-	public PersonsDataModel(){
+	public PersonsDataModel(JTable table){
 		try{
-			
-			conn = DriverManager.getConnection("jdbc:sqlite:mydb.db");
+
+            this.table = table;
+
+			this.conn = DriverManager.getConnection("jdbc:sqlite:mydb.db");
 			System.out.println("Connection successful");
 			
-			Statement statement = conn.createStatement();
+			this.statement = conn.createStatement();
 			
 			/**
 			 * creating table structure
 			 */
 			
-			String sql = "create table if not exists students ("
-					+ "student_no text,"
+			String sql = "create table if not exists persons ("
+					+ "id integer primary key,"
 					+ "last_name text,"
 					+ "first_name text )";
-			statement.execute(sql);
+			this.statement.execute(sql);
 			
 			
-			String insertQuery = "insert into students (student_no, first_name, last_name)"
-					+ "values (?,?,?)";
+			String insertQuery = "insert into persons (first_name, last_name)"
+					+ "values (?,?)";
 			
-			preparedStatement = conn.prepareStatement(insertQuery);							
-			
+			preparedStatement = conn.prepareStatement(insertQuery);
+
+            deletePreparedStatement = conn.prepareStatement("delete from persons where id = ?");
+            updatePreparedStatement = conn.prepareStatement("update persons set first_name = ?, last_name = ? where id = ?");
+
 		} catch(SQLException e){
 			e.printStackTrace();
 		}
 		
 	}
 	
-	public void addStudent(String studentNo, String firstName ,String lastName){
+	public void addPerson(String firstName, String lastName){
 		
 		
 		try {
-			preparedStatement.setString(1, "");
-			preparedStatement.setString(2, firstName);
-			preparedStatement.setString(3, lastName);
+			preparedStatement.setString(1, firstName);
+			preparedStatement.setString(2, lastName);
 			
 			preparedStatement.executeUpdate();
 		} catch (SQLException e) {
@@ -58,4 +65,46 @@ public class PersonsDataModel {
 			e.printStackTrace();
 		}
 	}
+
+    public void updateTableUI(){
+        try {
+
+            ArrayList<Person> persons = new ArrayList<Person>();
+            ResultSet rs = this.statement.executeQuery("select * from persons");
+            while ( rs.next() ) {
+                persons.add(new Person(rs.getString("first_name"),rs.getString("last_name"),rs.getInt("id")));
+            }
+
+            ((PersonTableModel)table.getModel()).setPersons(persons);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void deletePerson(int id){
+        try {
+                deletePreparedStatement.setInt(1,id);
+                deletePreparedStatement.executeUpdate();
+                this.updateTableUI();
+
+        } catch ( SQLException e ){
+            e.printStackTrace();
+        }
+    }
+
+    public void updatePerson(int id, String first_name, String last_name){
+        try {
+            updatePreparedStatement.setString(1, first_name);
+            updatePreparedStatement.setString(2, last_name);
+            updatePreparedStatement.setInt(3,id);
+            updatePreparedStatement.executeUpdate();
+            this.updateTableUI();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+
+    }
 }

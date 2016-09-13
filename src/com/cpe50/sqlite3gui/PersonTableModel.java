@@ -50,5 +50,8 @@ public class PersonTableModel extends AbstractTableModel{
 		return persons;
 	}
 
-	
+    public void setPersons(ArrayList<Person> persons) {
+        this.persons = persons;
+        this.fireTableDataChanged();
+    }
 }

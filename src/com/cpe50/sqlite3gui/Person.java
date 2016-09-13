@@ -1,7 +1,15 @@
 package com.cpe50.sqlite3gui;
 
 public class Person {
-	private String firstName, lastName;
+    private int id;
+    private String firstName, lastName;
+
+    public Person(String firstName, String lastName, int id) {
+        super();
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.id = id;
+    }
 
 	public String getFirstName() {
 		return firstName;
@@ -19,10 +27,11 @@ public class Person {
 		this.lastName = lastName;
 	}
 
-	public Person(String firstName, String lastName) {
-		super();
-		this.firstName = firstName;
-		this.lastName = lastName;
-	}
+    public int getId() {
+        return id;
+    }
 
+    public void setId(int id) {
+        this.id = id;
+    }
 }
