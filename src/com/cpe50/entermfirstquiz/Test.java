@@ -51,6 +51,7 @@ public class Test extends JFrame implements ActionListener  {
 		
 	}
 	public static void main(String[] args) {			
-		new Test();			
+		System.out.println(Math.random() * 4);
+
 	}	
 }
