@@ -4,6 +4,9 @@ package com.cpe50.s20170628;
  * Created by msalvio on 28/06/17.
  */
 public class TestPerson {
+    public TestPerson() {
+    }
+
     public static void main(String[] args) {
 
         /**
